@@ -30,7 +30,7 @@ os.system("export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print
 #Selenium method
 def selenium():
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.headless = False  #make selenium headless (Not open browser)
+    chrome_options.headless = False  #make selenium headless (Not open driver=)
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     return driver
 
@@ -39,7 +39,7 @@ driver = selenium()
 
 
 
-def scroll(browser):
+def scroll(driver):
     #Implement automatic scroll down the webpage.
     SCROLL_PAUSE_TIME = 1
     # Get scroll height
@@ -54,8 +54,10 @@ def scroll(browser):
 
         # Calculate new scroll height and compare with last scroll height
         new_height = driver.execute_script("return document.documentElement.scrollHeight")
-        if new_height == last_height:
-            break
+        if new_height == last_height:   
+            content = driver.page_source
+            soup = BeautifulSoup(content, 'html.parser')
+            return soup
         last_height = new_height
 
 
@@ -72,8 +74,8 @@ def scroll(browser):
 
 
 # section = soup.find('section', attrs ={'class': '_1x9L- _1iFjP'}) #main section of afr.com.au
-
-def extract(soup, result):
+result = []
+def extract(soup,result):
     
     headlines = soup.findAll('a')
     print("Number of link: {}".format(len(headlines)))
@@ -89,25 +91,21 @@ def extract(soup, result):
     df =pd.DataFrame({'headlines' : result})   
     df.to_csv('headlines.csv', index = False, encoding='utf-8')
 
-    print(df)
+    return result
 
 
 
 URLS = ["https://www.afr.com/", "https://www.fnlondon.com/", "https://au.finance.yahoo.com/"]
 
-result = []
+
 for URL in URLS:
     driver.get(URL)
 
     #Scroll to bottom
-    scroll(driver)
-
-    #Convert html to beautiful soup format
-    content = driver.page_source
-    soup = BeautifulSoup(content, 'html.parser')
+    soup = scroll(driver)
     
     #Extract headlines
-    extract(soup, result)
+    result = extract(soup)
 
 
 
