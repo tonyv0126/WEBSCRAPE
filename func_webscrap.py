@@ -11,7 +11,7 @@ import re
 import matplotlib.pyplot as plt
 import seaborn as sns
 import io
-import base64
+import urllib, base64
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 # This allows to create individual objects from a bog of words
@@ -23,6 +23,8 @@ from nltk import ngrams
 from collections import Counter
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from wordcloud import WordCloud
+
 
 
 
@@ -97,33 +99,48 @@ def cleanse(result):
     return words_ns
    
 
-def graph(data, title):
+def graph(data, type):
 
       # Generate plot
+
     
+    if type == "cloud":
+
+        wordcloud = WordCloud(width = 1000, height = 500).generate_from_frequencies(data)
+        plt.figure(figsize=(15,10))
+        plt.imshow(wordcloud)
+        plt.axis("off")
+        plt.rcParams["figure.autolayout"] = True
+        plt.margins(x=0, y=0)
+        fig = plt.gcf()
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png', bbox_inches='tight')
+        buf.seek(0)
+        string = base64.b64encode(buf.read())
+        pngImageB64String = 'data:image/png;base64,' + urllib.parse.quote(string)
+
+       
+
+    else:
+        fig, ax = plt.subplots()
+        sns.barplot(ax=ax,x='frequency',y='word',data=data.head(20))
+        plt.rcParams["figure.autolayout"] = True
+        plt.margins(x=0, y=0)
+            # Convert plot to PNG image
+        pngImage = io.BytesIO()
+        FigureCanvas(fig).print_png(pngImage)
+
+        # Encode PNG image to base64 string
+        pngImageB64String = "data:image/png;base64,"
+        pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')
 
    
-
-    # fig, ax = plt.subplots(figsize=(10,10))
-    # all_plt = sns.barplot( x=data.index, y=data.values, ax=ax)
-    # plt.xticks(rotation=30)
-
-    px = 1/plt.rcParams['figure.dpi']  # pixel in inches
-    fig, ax = plt.subplots(figsize=(400*px, 600*px))
-    sns.barplot(ax=ax,x='frequency',y='word',data=data.head(20))
-     # Convert plot to PNG image
-    pngImage = io.BytesIO()
-    FigureCanvas(fig).print_png(pngImage)
-
-    # Encode PNG image to base64 string
-    pngImageB64String = "data:image/png;base64,"
-    pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')
-
     return pngImageB64String
 
 
         
 def word_frequency(sentence_list):
+    common_words = ["financial", "australian", "stock", "aussie"]
     # joins all the sentenses
     sentence_list ="".join(sentence_list)
     # creates tokens, creates lower class, removes numbers and lemmatizes the words
@@ -131,6 +148,7 @@ def word_frequency(sentence_list):
     new_tokens = [t.lower() for t in new_tokens]
     new_tokens =[t for t in new_tokens if t not in stopwords.words('english')]
     new_tokens = [t for t in new_tokens if t.isalpha()]
+    new_tokens = [t for t in new_tokens if t not in common_words]
     lemmatizer = WordNetLemmatizer()
     new_tokens =[lemmatizer.lemmatize(t) for t in new_tokens]
     #counts the words, pairs and trigrams
@@ -141,7 +159,8 @@ def word_frequency(sentence_list):
     single_word = pd.DataFrame(counted.items(),columns=['word','frequency']).sort_values(by='frequency',ascending=False)
     word_pairs =pd.DataFrame(counted_2.items(),columns=['word','frequency']).sort_values(by='frequency',ascending=False)
     trigrams =pd.DataFrame(counted_3.items(),columns=['word','frequency']).sort_values(by='frequency',ascending=False)
-    return single_word,word_pairs,trigrams
+    return single_word,word_pairs,trigrams, counted
+
 
 
 

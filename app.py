@@ -27,20 +27,32 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 @app.route("/", methods = ["GET", "POST"])
 def index():
-    result = []
+    results = []
     words = []
+    urls = []
    
 
     if request.method == "POST":
-       url = request.form.get("url")
-
+       url1 = request.form.get("url1")
+       url2 = request.form.get("url2")
+       url3 = request.form.get("url3")
+       urls.append(url1)
+       urls.append(url2)
+       urls.append(url3)
        browser = selenium()
-       browser.get(url)
-       soup = scroll(browser)
-       result = extract(soup)
-       single_word, bigram, trigram = word_frequency(result)
 
-       return render_template("index.html", words = words, single_graph = graph(single_word, "Single"), bi_graph = graph(bigram, "Bigram"), tri_graph = graph(trigram, "trigram"))
+       for url in urls:
+         if url == "":
+            pass
+         else:
+            browser.get(url)
+            soup = scroll(browser)
+            result = extract(soup)
+            results.append(result)
+
+       single_word, bigram, trigram, cloud = word_frequency(result)
+
+       return render_template("index.html", cloud = graph(cloud,"cloud"), single_graph = graph(single_word, "Single"), bi_graph = graph(bigram, "Bigram"), tri_graph = graph(trigram, "trigram"))
 
       
 
