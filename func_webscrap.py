@@ -35,7 +35,7 @@ os.system("export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print
 #Selenium method
 def selenium():
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.headless = False  #make selenium headless (Not open browser)
+    chrome_options.headless = True  #make selenium headless (Not open browser)
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     return driver
 
@@ -102,11 +102,26 @@ def cleanse(result):
 def graph(data, type):
 
       # Generate plot
+    if type == "pie":
+        fig = plt.figure()
+        plt.rcParams["figure.autolayout"] = True
+        plt.margins(x=0, y=0)
+        labels = list(data.keys())
+        values = list(data.values())
+        plt.pie(values, autopct='%1.1f%%', textprops={'fontsize': 18})
+        plt.legend(labels=labels, bbox_to_anchor=(1,0.5), loc="center right", fontsize=12, bbox_transform=plt.gcf().transFigure) 
 
+        # Convert plot to PNG image
+        pngImage = io.BytesIO()
+        FigureCanvas(fig).print_png(pngImage)
+
+        # Encode PNG image to base64 string
+        pngImageB64String = "data:image/png;base64,"
+        pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')
     
-    if type == "cloud":
+    elif type == "cloud":
 
-        wordcloud = WordCloud(width = 1000, height = 500).generate_from_frequencies(data)
+        wordcloud = WordCloud(width = 1000, height = 500, stopwords=["aussie"], background_color="white").generate_from_frequencies(data)
         plt.figure(figsize=(15,10))
         plt.imshow(wordcloud)
         plt.axis("off")
@@ -140,7 +155,7 @@ def graph(data, type):
 
         
 def word_frequency(sentence_list):
-    common_words = ["financial", "australian", "stock", "aussie"]
+    common_words = ["financial", "australian", "stock", "aussie", "australia", "share"]
     # joins all the sentenses
     sentence_list ="".join(sentence_list)
     # creates tokens, creates lower class, removes numbers and lemmatizes the words

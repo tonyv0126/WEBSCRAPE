@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 
 <html lang="en">
+  
 
-<head>
+<head >
+  
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <!-- <link href="/static/favicon.ico" rel="icon"> -->
 
     <link href="/static/styles.css" rel="stylesheet">
     <link href="https://getbootstrap.com/docs/5.2/assets/css/docs.css" rel="stylesheet">
@@ -14,67 +15,94 @@
     <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" rel="stylesheet">
     <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"></script>
 
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+
 
     <title>FINANCE KEY TREND </title>
+    
+
 
  
 </head>
-
 <body class="p-3 m-0 border-0 bd-example bd-example-row">
+      {% if get_flashed_messages() %}
+      <header>
+          <div class="alert alert-primary mb-0 text-center" role="alert">
+              {{ get_flashed_messages() | join(" ") }}
+          </div>
+      </header>
+      {% endif %}
+ 
 
     <h1 style=" text-align: center; "> FINANCE KEY TREND </h1>
 
     <div class="container-fluid text-right"> 
-        <form action="/" method = "POST" style="text-align: right;">
-            <label for="url">Enter URL: </label>
-            <input name="url1" type="text" width="auto" placeholder="Enter URL to get data from" autofocus autocomplete="off"><br>
-            <input name="url2" type="text" width="auto" placeholder="Enter URL to get data from" autofocus autocomplete="off"><br>
-            <input name="url3" type="text" width="auto" placeholder="Enter URL to get data from" autofocus autocomplete="off"><br>
-            <input type = "submit" value = "Fetch">
+        <form action="/" method = "POST" style="text-align: right;" onsubmit="$('#loading').show();">
+            <label for="url2"> URLs here: </label>
+            <input name="url1" class="input_field" type="text" width="auto" placeholder="Enter URL to get data from" autofocus autocomplete="off" required>
+            <br>
+            <input name="url2" class="input_field" type="text" width="auto" placeholder="Enter URL to get data from" autofocus autocomplete="off"><br>
+            <input name="url3" class="input_field" type="text" width="auto" placeholder="Enter URL to get data from" autofocus autocomplete="off"><br>
+            
+            
+            {% for n in (0, number_of_urls) %}
+            <input name="url" class="input_field" type="text" width="auto" placeholder="Enter URL to get data from" autofocus autocomplete="off" >
+            <br>
+            {% endfor %}
+
+            
+            <button action="/addurl" class="btn btn-secondary">  Add URL  </button>
+            <input type="submit" class="btn btn-primary" value="Fetch" >
+            
+
+            
         </form><br>
+        <div id="loading">
+          <div style = "color: rgb(205, 127, 44);  position: absolute; top: 50%;
+          left: 50%; transform: translate(-50%, -50%); "> 
+          <span>
+            Fetching data...
+          </span><br>
+          <img src="/static/Preloader_1.gif">
+          
+        </div> 
+        </div>
+
     </div>
 
-    <div>
-
-        <form style="text-align: right; ">
-            <label for="fileSelect">Select your CSV: </label>
-            <input id="fileSelect" name="data" type="file"  accept=".csv , .xlsx">
-
-        </form>
-
-    </div>
-
-    
-
-    
+ 
     <div class="container text-center">
-        Grid test
+        
         <div class="row">
           <div class="col-sm">
-            <h2> Most repeated single word </h2>
-          </div>        
-            <img class="col-sm" src="{{ cloud }}"/>
+            <h2> Most Popular Keyword </h2>
+            <img  src="{{ cloud }}" onerror = "this.onerror=null; this.src='/static/wordcloud.png' " alt="" width="100" height="120"/>
+          </div>
         </div>
+
     </div>
 
 
 
 
-      <div class="container text-center">
+    <div class="container text-center">
         <div class="row">
           <div class="col-12 col-sm-6">
-            <h2>Most repeated bigram (pair of words)</h2>
-            <img  src="{{ bi_graph}}"/>
+            <h2>Most Repeated Bigram (pair of words)</h2>
+            <img  src="{{ bi_graph}}" onerror = "this.onerror=null; this.src='/static/bigram.png' " alt="" width="100" height="120"/>
           </div>
 
           <div class="col-12 col-sm-6">
-            <h2>Most repeated trigram </h2>
-            <img  src="{{ tri_graph }}"/>
+            <h2>Shares of Data Between Sites </h2>
+            <img  src="{{ pie_chart }}" onerror = "this.onerror=null; this.src='/static/piechart.png' " alt="" width="100" height="120"/>
           
           </div>
-      </div>
+    </div>
 
-      <img src="{{ bi_graph }}"/>
+      <img src="{{ tri_graph  }}"/>
+    </div>
+ 
+   
 </body>
 
 </html>
