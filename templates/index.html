@@ -3,7 +3,7 @@
 <html lang="en">
   
 
-<head >
+<head>
   
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -38,25 +38,24 @@
 
     <div class="container-fluid text-right"> 
         <form action="/" method = "POST" style="text-align: right;" onsubmit="$('#loading').show();">
-            <label for="url2"> URLs here: </label>
-            <input name="url1" class="input_field" type="text" width="auto" placeholder="Enter URL to get data from" autofocus autocomplete="off" required>
-            <br>
-            <input name="url2" class="input_field" type="text" width="auto" placeholder="Enter URL to get data from" autofocus autocomplete="off"><br>
-            <input name="url3" class="input_field" type="text" width="auto" placeholder="Enter URL to get data from" autofocus autocomplete="off"><br>
+            <label for="url"> URLs here: </label>
+            <input name="url" class="input_field" type="text" width="350px" placeholder="Enter URL to get data from" autofocus  required><br>
+            <input name="url" class="input_field" type="text" width="350px" placeholder="Enter URL to get data from" autofocus ><br>
+            <input name="url" class="input_field" type="text" width="350px" placeholder="Enter URL to get data from" autofocus ><br>
             
             
-            {% for n in (0, number_of_urls) %}
-            <input name="url" class="input_field" type="text" width="auto" placeholder="Enter URL to get data from" autofocus autocomplete="off" >
-            <br>
-            {% endfor %}
+            
+            
+            <div  id="fieldContainer"></div>
+            
+            <button type="button" class="btn btn-secondary" onclick="addKeywordFields()">  Add URL  </button>
 
-            
-            <button action="/addurl" class="btn btn-secondary">  Add URL  </button>
             <input type="submit" class="btn btn-primary" value="Fetch" >
             
 
             
         </form><br>
+
         <div id="loading">
           <div style = "color: rgb(205, 127, 44);  position: absolute; top: 50%;
           left: 50%; transform: translate(-50%, -50%); "> 
@@ -93,15 +92,36 @@
           </div>
 
           <div class="col-12 col-sm-6">
-            <h2>Shares of Data Between Sites </h2>
+            <h2>Data Collected Between Sites </h2>
             <img  src="{{ pie_chart }}" onerror = "this.onerror=null; this.src='/static/piechart.png' " alt="" width="100" height="120"/>
           
           </div>
     </div>
 
-      <img src="{{ tri_graph  }}"/>
+ 
     </div>
  
+
+    <script>
+        function addKeywordFields() {
+        var mydiv = document.getElementById("fieldContainer");
+        const input = document.createElement('input');
+        var br = document.createElement("br");
+        input.name = "url"; // Some dynamic name logic
+        input.type = 'text';
+        input.style.width = "300px";
+        input.class = "input_field";
+        input.placeholder = "Enter URL to get data from";
+        mydiv.appendChild(input);
+        mydiv.appendChild(br);  
+
+        }
+
+        if ( window.history.replaceState ) {
+            window.history.replaceState( null, null, window.location.href );
+        }
+
+    </script>
    
 </body>
 

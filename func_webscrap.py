@@ -166,15 +166,13 @@ def word_frequency(sentence_list):
     new_tokens = [t for t in new_tokens if t not in common_words]
     lemmatizer = WordNetLemmatizer()
     new_tokens =[lemmatizer.lemmatize(t) for t in new_tokens]
-    #counts the words, pairs and trigrams
+    #counts the words, pairs 
     counted = Counter(new_tokens)
     counted_2= Counter(ngrams(new_tokens,2))
-    counted_3= Counter(ngrams(new_tokens,3))
     #creates 3 data frames and returns thems
     single_word = pd.DataFrame(counted.items(),columns=['word','frequency']).sort_values(by='frequency',ascending=False)
     word_pairs =pd.DataFrame(counted_2.items(),columns=['word','frequency']).sort_values(by='frequency',ascending=False)
-    trigrams =pd.DataFrame(counted_3.items(),columns=['word','frequency']).sort_values(by='frequency',ascending=False)
-    return single_word,word_pairs,trigrams, counted
+    return single_word,word_pairs, counted
 
 
 
